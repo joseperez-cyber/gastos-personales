@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { supabase } from "./supabase";
-import "./Appgastos.css";
+import "./appgastos.css";
 
 function formatDate(date) {
   const year = date.getFullYear();
