@@ -245,6 +245,7 @@ export default function App() {
 
   const [actionsOpen, setActionsOpen] = useState(false);
   const [expenseFormOpen, setExpenseFormOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const expenseFormRef = useRef(null);
 
   const monthRange = getMonthRange(selectedMonth);
@@ -952,75 +953,86 @@ export default function App() {
         </div>
       </section>
 
-      <section className="card">
-        <h2>Categorías y presupuestos</h2>
+      <section className="card collapsible-card">
+        <button
+          type="button"
+          className="collapsible-header"
+          onClick={() => setCategoriesOpen(!categoriesOpen)}
+        >
+          <span>⚙️ Categorías y presupuestos</span>
+          <strong>{categoriesOpen ? "−" : "+"}</strong>
+        </button>
 
-        <form onSubmit={addCategory} className="form">
-          <label>
-            Nueva categoría
-            <input
-              type="text"
-              placeholder="Ej. Gasolina"
-              value={newCategoryName}
-              onChange={(event) => setNewCategoryName(event.target.value)}
-            />
-          </label>
+        {categoriesOpen && (
+          <div className="collapsible-content">
+            <form onSubmit={addCategory} className="form">
+              <label>
+                Nueva categoría
+                <input
+                  type="text"
+                  placeholder="Ej. Gasolina"
+                  value={newCategoryName}
+                  onChange={(event) => setNewCategoryName(event.target.value)}
+                />
+              </label>
 
-          <label>
-            Presupuesto mensual
-            <div
-              className="amount-display amount-display--sm"
-              onClick={() => setKbBudgetOpen(true)}
-            >
-              <span className="amount-display__currency">$</span>
-              <span className="amount-display__value">
-                {newCategoryBudget ? (
-                  Number(newCategoryBudget).toLocaleString("es-MX")
-                ) : (
-                  <span className="amount-display__placeholder">
-                    Toca para ingresar
+              <label>
+                Presupuesto mensual
+                <div
+                  className="amount-display amount-display--sm"
+                  onClick={() => setKbBudgetOpen(true)}
+                >
+                  <span className="amount-display__currency">$</span>
+                  <span className="amount-display__value">
+                    {newCategoryBudget ? (
+                      Number(newCategoryBudget).toLocaleString("es-MX")
+                    ) : (
+                      <span className="amount-display__placeholder">
+                        Toca para ingresar
+                      </span>
+                    )}
                   </span>
-                )}
-              </span>
-              <span className="amount-display__icon">🔢</span>
+                  <span className="amount-display__icon">🔢</span>
+                </div>
+              </label>
+
+              <button type="submit">Agregar categoría</button>
+            </form>
+
+            <div className="settings-list">
+              {categories.map((category) => (
+                <div className="settings-item" key={category.id}>
+                  <input
+                    type="text"
+                    defaultValue={category.name}
+                    onBlur={(event) =>
+                      updateCategoryName(category.id, event.target.value)
+                    }
+                  />
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    defaultValue={category.monthly_budget}
+                    inputMode="decimal"
+                    onBlur={(event) =>
+                      updateCategoryBudget(category.id, event.target.value)
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    className="delete-button"
+                    onClick={() => deleteCategory(category.id)}
+                  >
+                    🗑
+                  </button>
+                </div>
+              ))}
             </div>
-          </label>
-
-          <button type="submit">Agregar categoría</button>
-        </form>
-
-        <div className="settings-list">
-          {categories.map((category) => (
-            <div className="settings-item" key={category.id}>
-              <input
-                type="text"
-                defaultValue={category.name}
-                onBlur={(event) =>
-                  updateCategoryName(category.id, event.target.value)
-                }
-              />
-
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                defaultValue={category.monthly_budget}
-                inputMode="decimal"
-                onBlur={(event) =>
-                  updateCategoryBudget(category.id, event.target.value)
-                }
-              />
-
-              <button
-                type="button"
-                className="delete-button"
-                onClick={() => deleteCategory(category.id)}
-              >
-                🗑
-              </button>
-            </div>
-          ))}
-        </div>
+          </div>
+        )}
       </section>
 
       <div className="floating-ui">

@@ -844,3 +844,52 @@ button:not(:disabled):active {
   padding: 0;
   font-size: 14px;
 }
+/* Sección plegable de categorías */
+
+.collapsible-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.collapsible-header {
+  width: 100%;
+  background: white;
+  color: #111827;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  padding: 16px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.collapsible-header strong {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #111827;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.collapsible-content {
+  padding: 0 16px 16px;
+  animation: slideDown 0.18s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
