@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { supabase } from "./supabase";
@@ -242,6 +242,9 @@ export default function App() {
 
   const [kbOpen, setKbOpen] = useState(false);
   const [kbBudgetOpen, setKbBudgetOpen] = useState(false);
+
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const expenseFormRef = useRef(null);
 
   const monthRange = getMonthRange(selectedMonth);
 
@@ -508,6 +511,13 @@ export default function App() {
     setSelectedMonth(new Date());
   }
 
+  function scrollToExpenseForm() {
+    expenseFormRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
   const summary = useMemo(() => {
     const categoriesWithTotals = categories.map((category) => {
       const totalSpent = expenses
@@ -769,7 +779,7 @@ export default function App() {
         </div>
       </section>
 
-      <section className="card">
+      <section className="card add-expense-card" ref={expenseFormRef}>
         <h2>Agregar gasto</h2>
 
         <form onSubmit={addExpense} className="form">
@@ -989,29 +999,53 @@ export default function App() {
         </div>
       </section>
 
-      <div className="action-buttons">
+      <div className="floating-ui">
+        <div className={`share-menu ${actionsOpen ? "share-menu--open" : ""}`}>
+          <button
+            type="button"
+            onClick={() => {
+              copyWhatsAppSummary();
+              setActionsOpen(false);
+            }}
+          >
+            📋 Copiar resumen
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              openWhatsAppSummary();
+              setActionsOpen(false);
+            }}
+          >
+            💬 Abrir WhatsApp
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              sharePdfSummary();
+              setActionsOpen(false);
+            }}
+          >
+            📄 Compartir PDF
+          </button>
+        </div>
+
         <button
           type="button"
-          className="whatsapp-button"
-          onClick={copyWhatsAppSummary}
+          className="share-fab"
+          onClick={() => setActionsOpen(!actionsOpen)}
         >
-          📋 Copiar
+          {actionsOpen ? "×" : "☰"}
         </button>
 
         <button
           type="button"
-          className="whatsapp-button secondary"
-          onClick={openWhatsAppSummary}
+          className="add-fab"
+          onClick={scrollToExpenseForm}
         >
-          💬 WhatsApp
-        </button>
-
-        <button
-          type="button"
-          className="whatsapp-button pdf-button"
-          onClick={sharePdfSummary}
-        >
-          📄 PDF
+          +
         </button>
       </div>
     </main>
