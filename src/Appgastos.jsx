@@ -751,20 +751,13 @@ export default function App() {
           </button>
         </div>
 
-        <p className="user-email">{session.user.email}</p>
-
         <div className="month-controls">
-          <button type="button" onClick={goToPreviousMonth}>
-            ← Anterior
-          </button>
-
-          <button type="button" onClick={goToCurrentMonth}>
-            Hoy
-          </button>
-
-          <button type="button" onClick={goToNextMonth}>
-            Siguiente →
-          </button>
+          <button type="button" className="month-arrow" onClick={goToPreviousMonth} aria-label="Mes anterior">‹</button>
+          <div className="month-label">
+            <span>{monthRange.monthName}</span>
+            <button type="button" className="month-today" onClick={goToCurrentMonth}>Hoy</button>
+          </div>
+          <button type="button" className="month-arrow" onClick={goToNextMonth} aria-label="Mes siguiente">›</button>
         </div>
       </header>
 
