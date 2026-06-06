@@ -244,6 +244,7 @@ export default function App() {
   const [kbBudgetOpen, setKbBudgetOpen] = useState(false);
 
   const [actionsOpen, setActionsOpen] = useState(false);
+  const [expenseFormOpen, setExpenseFormOpen] = useState(false);
   const expenseFormRef = useRef(null);
 
   const monthRange = getMonthRange(selectedMonth);
@@ -359,6 +360,7 @@ export default function App() {
     setAmount("");
     setDescription("");
     setExpenseDate(getTodayDate());
+    setExpenseFormOpen(false);
     showMessage("✅ Gasto guardado.");
     await fetchData();
   }
@@ -511,11 +513,15 @@ export default function App() {
     setSelectedMonth(new Date());
   }
 
-  function scrollToExpenseForm() {
-    expenseFormRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+  function openExpenseForm() {
+    setExpenseFormOpen(true);
+
+    setTimeout(() => {
+      expenseFormRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 80);
   }
 
   const summary = useMemo(() => {
@@ -779,69 +785,81 @@ export default function App() {
         </div>
       </section>
 
-      <section className="card add-expense-card" ref={expenseFormRef}>
-        <h2>Agregar gasto</h2>
+      {expenseFormOpen && (
+        <section className="card add-expense-card" ref={expenseFormRef}>
+          <div className="card-title-row">
+            <h2>Agregar gasto</h2>
 
-        <form onSubmit={addExpense} className="form">
-          <label>
-            Monto
-            <div className="amount-display" onClick={() => setKbOpen(true)}>
-              <span className="amount-display__currency">$</span>
-              <span className="amount-display__value">
-                {amount ? (
-                  Number(amount).toLocaleString("es-MX")
-                ) : (
-                  <span className="amount-display__placeholder">
-                    Toca para ingresar
-                  </span>
-                )}
-              </span>
-              <span className="amount-display__icon">🔢</span>
-            </div>
-          </label>
-
-          <label>
-            Categoría
-            <select
-              value={categoryId}
-              onChange={(event) => setCategoryId(event.target.value)}
+            <button
+              type="button"
+              className="close-card-button"
+              onClick={() => setExpenseFormOpen(false)}
             >
-              {categories.length === 0 && (
-                <option value="">No hay categorías</option>
-              )}
+              ×
+            </button>
+          </div>
 
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </label>
+          <form onSubmit={addExpense} className="form">
+            <label>
+              Monto
+              <div className="amount-display" onClick={() => setKbOpen(true)}>
+                <span className="amount-display__currency">$</span>
+                <span className="amount-display__value">
+                  {amount ? (
+                    Number(amount).toLocaleString("es-MX")
+                  ) : (
+                    <span className="amount-display__placeholder">
+                      Toca para ingresar
+                    </span>
+                  )}
+                </span>
+                <span className="amount-display__icon">🔢</span>
+              </div>
+            </label>
 
-          <label>
-            Descripción
-            <input
-              type="text"
-              placeholder="Ej. Tacos, Uber, caseta..."
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-            />
-          </label>
+            <label>
+              Categoría
+              <select
+                value={categoryId}
+                onChange={(event) => setCategoryId(event.target.value)}
+              >
+                {categories.length === 0 && (
+                  <option value="">No hay categorías</option>
+                )}
 
-          <label>
-            Fecha
-            <input
-              type="date"
-              value={expenseDate}
-              onChange={(event) => setExpenseDate(event.target.value)}
-            />
-          </label>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-          <button type="submit" disabled={categories.length === 0}>
-            Guardar gasto
-          </button>
-        </form>
-      </section>
+            <label>
+              Descripción
+              <input
+                type="text"
+                placeholder="Ej. Tacos, Uber, caseta..."
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+              />
+            </label>
+
+            <label>
+              Fecha
+              <input
+                type="date"
+                value={expenseDate}
+                onChange={(event) => setExpenseDate(event.target.value)}
+              />
+            </label>
+
+            <button type="submit" disabled={categories.length === 0}>
+              Guardar gasto
+            </button>
+          </form>
+        </section>
+      )}
 
       <section className="categories">
         {summary.categoriesWithTotals.map((category) => {
@@ -904,21 +922,27 @@ export default function App() {
           <p className="empty">Todavía no has registrado gastos este mes.</p>
         )}
 
-        <div className="expense-list">
+        <div className="expense-list compact-expense-list">
           {expenses.map((expense) => (
-            <div className="expense-item" key={expense.id}>
-              <div>
+            <div className="expense-item compact-expense-item" key={expense.id}>
+              <div className="expense-main">
                 <strong>{formatMoney(expense.amount)}</strong>
-                <p>
-                  {expense.categories?.name || "Sin categoría"} ·{" "}
-                  {expense.description || "Sin descripción"} ·{" "}
-                  {expense.expense_date}
-                </p>
+
+                <div>
+                  <p className="expense-title">
+                    {expense.description || "Sin descripción"}
+                  </p>
+
+                  <p className="expense-meta">
+                    {expense.categories?.name || "Sin categoría"} ·{" "}
+                    {expense.expense_date}
+                  </p>
+                </div>
               </div>
 
               <button
                 type="button"
-                className="delete-button"
+                className="delete-button compact-delete-button"
                 onClick={() => deleteExpense(expense.id)}
               >
                 🗑
@@ -1043,7 +1067,7 @@ export default function App() {
         <button
           type="button"
           className="add-fab"
-          onClick={scrollToExpenseForm}
+          onClick={openExpenseForm}
         >
           +
         </button>
